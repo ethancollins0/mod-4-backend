@@ -15,7 +15,9 @@ function getProperties(username){
     return getCompanyId(username)
         .then(companies => {
             return companies.length > 0
-                ? getPropertiesById(companies[0].id).then(properties => properties)
+                ? getPropertiesById(companies[0].id).then(properties => {
+                    console.log(properties) 
+                    return properties})
                 : []
         })
 }
@@ -41,3 +43,5 @@ module.exports = {
     getEmployees,
     getProperties
 }
+
+getProperties('username').then(console.log)

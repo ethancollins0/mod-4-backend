@@ -12,7 +12,7 @@ app.get('/home', (req, res) => {
     const company_data = {}
     const get_data = db.getEmployees('username')
         .then(employees => company_data['employees'] = employees)
-        .then(db.getProperties('username'))
+        .then(() => db.getProperties('username'))
         .then(properties => {
             company_data['properties'] = properties
             return company_data

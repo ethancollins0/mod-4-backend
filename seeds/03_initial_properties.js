@@ -14,13 +14,12 @@ exports.seed = function(knex) {
              tenant_name: "Jill Bismith", 
              tenant_email: "jillybean@gmail.com", 
              tenant_phone: '832-732-1785'},
-             
             {address: '719 Second Property Lane', 
             latest_survey_date: 'January 3rd, 2019', 
             company_id: id, 
             tenant_name: "Bob Burger", 
             tenant_email: "tina@gmail.com", 
-            tenant_phone: '123-456-7890'},
+            tenant_phone: '123-456-7890'}
           ])
         })
     });
