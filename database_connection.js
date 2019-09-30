@@ -33,15 +33,34 @@ function getEmployees(username){
                 ? getEmployeesById(companies[0].id).then(employees => employees)
                 : []
         })
-        // .then(company => getEmployeesById(company))
 }
-// function getEmployeesById(id){
-//     db('employees').where('company_id', id)
-// }
+
+function addNewProperty(property, username){
+    const {address, 
+           tenant_email, 
+           tenant_phone, 
+           tenant_name, 
+           latest_survey_date} = property
+
+    return getCompanyId(username)
+        .then(company => company[0].id)
+        .then(id => {
+            return db('properties').insert(
+                {address,
+                 latest_survey_date, 
+                 company_id: id, 
+                 tenant_name, 
+                 tenant_email, 
+                 tenant_phone}).returning('id')
+
+        })
+}
+
 
 module.exports = {
     getEmployees,
-    getProperties
+    getProperties,
+    addNewProperty
 }
 
-getProperties('username').then(console.log)
+// getProperties('username').then(console.log)
