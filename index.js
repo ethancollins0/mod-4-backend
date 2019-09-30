@@ -22,7 +22,7 @@ app.get('/home', (req, res) => {
 
 app.post('/properties', (req, res) => {
     req.body.username && req.body.property
-        ? db.addNewProperty(req.body.property, req.body.username).then(id => res.json(`Added new property with id: ${id}`))
+        ? db.addNewProperty(req.body.property, req.body.username).then(res.json(req.body.property))
         : res.json('Failed to add property')
 })
 
