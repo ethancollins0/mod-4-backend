@@ -26,12 +26,16 @@ app.post('/properties', (req, res) => {
         : res.json('Failed to add property')
 })
 
+app.post('/login', (req, res) => {
+    const {username, password} = req.body
+    console.log(username, password)
+
+    res.json('success')
+})
+
 app.put('/', (req, res) => {
     res.json('PUT')
 })
-
-
-
 
 const port = process.env.PORT || 3001
 
