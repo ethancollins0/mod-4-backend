@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt')
 
 exports.seed = function(knex) {
   // Deletes ALL existing entries
@@ -6,8 +7,11 @@ exports.seed = function(knex) {
   return knex('companies').del()
     .then(function () {
       // Inserts seed entries
-      return knex('companies').insert([
-        {name: 'First Co', username: 'username' , password: 'password'}
-      ])
+      return bcrypt.hash('password', 10).then((hash) => {
+        return knex('companies').insert([
+          {name: 'First Co', username: 'username' , password: hash}
+        ])
+      })
+      
     });
 };

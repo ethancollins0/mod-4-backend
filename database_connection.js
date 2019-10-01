@@ -60,7 +60,6 @@ function addNewProperty(property, username){
 module.exports = {
     getEmployees,
     getProperties,
-    addNewProperty
+    addNewProperty,
+    getCompanyId
 }
-
-// getProperties('username').then(console.log)
