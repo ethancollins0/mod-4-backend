@@ -3,57 +3,99 @@ const cors = require('cors')
 const bodyParser = require('body-parser')
 const db = require('./database_connection')
 const auth = require('./authenticate_company')
-const bcrypt = require('bcrypt')
-const session = require('client-sessions')
+const jwt = require('jsonwebtoken')
 const app = express()
 
 app.use(bodyParser.urlencoded())
 app.use(bodyParser.json())
 app.use(cors())
 
-app.use(session({
-    cookieName: 'session',
-    secret: process.env.SECRET,
-    duration: 30 * 60 * 1000,
-    activeDuration: 5 * 60 * 1000,
-}))
-
-
-
-
-app.get('/home', (req, res) => {
-    const company_data = {}
-    const get_data = db.getEmployees('username')
-        .then(employees => company_data['employees'] = employees)
-        .then(() => db.getProperties('username'))
-        .then(properties => {
-            company_data['properties'] = properties
-            return company_data
-        })
-        get_data.then(data => res.json(data))
+app.post('/home', verifyToken, (req, res) => {
+    jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
+        if (err){
+            res.json(err)
+        } else {
+            const username = decoded.username
+            const company_data = {}
+            const get_data = db.getEmployees(username)
+                .then(employees => company_data['employees'] = employees)
+                .then(() => db.getProperties(username))
+                .then(properties => {
+                    company_data['properties'] = properties
+                    return company_data
+                })
+            get_data.then(data => res.json(data))
+        }
+    })
 })
 
-app.post('/properties', (req, res) => {
-    req.body.username && req.body.property
-        ? db.addNewProperty(req.body.property, req.body.username).then(res.json(req.body.property))
-        : res.json('Failed to add property')
+app.post('/signup', (req, res) => {
+    const {username, password, company} = req.body.user
+    db.createCompany(username, password, company)
+    // console.log(username, password, company)
+    res.json('temp')
 })
+
+app.post('/properties', verifyToken, (req, res) => {
+    console.log('test', req.body)
+    jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
+        if (err){
+            res.json(err)
+        } else {
+        // console.log(decoded, decoded.username, req.body.property)
+        decoded.username && req.body.property
+            ? db.addNewProperty(req.body.property, decoded.username).then(res.json(req.body.property))
+            : res.json('Failed to add property')
+        }
+    })
+})
+
+function verifyToken(req, res, next){
+    //Get auth header value
+    
+    const bearerHeader = req.headers['authorization'];
+    // console.log(bearerHeader)
+    //Check if bearer exists
+    if (typeof bearerHeader == 'string'){
+        //Split string after 'Bearer'
+        const bearer = bearerHeader.split(' ')
+        //Get token from array
+        const bearerToken = bearer[1]
+        //set token
+        req.token = bearerToken
+        //Next middleware
+        next();
+    } else {
+        //Forbidden
+        res.json('forbidden')
+    }
+}
 
 app.post('/login', (req, res) => {
     const {username, password} = req.body
     auth.authenticateCompany(username, password)
         .then(bool => {
             return bool
-                ? getCompanyData(username).then(data => res.json(data))
+                ? createToken(username, res)
                 : res.json('Failed to Authenticate')
         })
 })
 
+app.post('/signup', verifyToken, (req, res) => {
+
+})
+
+function createToken(username, res){
+    jwt.sign({ username }, process.env.SECRET, {expiresIn: 30 * 60} ,(err, token) => {
+        getCompanyData(username).then(data => res.json([data, token]))
+    })
+}
+
 function getCompanyData(username){
     const company_data = {}
-    const get_data = db.getEmployees('username')
+    const get_data = db.getEmployees(username)
         .then(employees => company_data['employees'] = employees)
-        .then(() => db.getProperties('username'))
+        .then(() => db.getProperties(username))
         .then(properties => {
             company_data['properties'] = properties
                 return company_data
@@ -71,3 +113,13 @@ app.listen(port, () => {
     console.log(`Listening on port ${port}...`)
 })
 
+function validateToken(req, res, next) {
+    if (req.token){
+        const bearer = req.token
+        const bearerHeader = bearer.split(' ')[0]
+        req.token = bearerHeader
+        next()
+    } else {
+        res.json('forbidden')
+    }
+}
