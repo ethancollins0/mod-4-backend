@@ -8,7 +8,7 @@ const app = express()
 
 app.use(bodyParser.urlencoded())
 app.use(bodyParser.json())
-app.options('*', cors())
+app.use(cors())
 
 app.post('/home', validateToken, (req, res) => {
     jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
