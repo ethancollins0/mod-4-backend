@@ -94,11 +94,6 @@ app.put('/', (req, res) => {
     res.json('PUT')
 })
 
-const port = process.env.PORT || 3001
-
-app.listen(port, () => {
-    console.log(`Listening on port ${port}...`)
-})
 
 function validateToken(req, res, next) {
     if (req.token){
@@ -110,3 +105,9 @@ function validateToken(req, res, next) {
         res.json('forbidden')
     }
 }
+
+const port = process.env.PORT || 3001
+
+app.listen(port, () => {
+    console.log(`Listening on port ${port}...`)
+})
