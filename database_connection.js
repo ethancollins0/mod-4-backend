@@ -1,5 +1,6 @@
 require('dotenv').config()
 
+const bcrypt = require('bcrypt')
 const configuration = require('./knexfile')['development']
 const db = require('knex')(configuration)
 
@@ -16,7 +17,6 @@ function getProperties(username){
         .then(companies => {
             return companies.length > 0
                 ? getPropertiesById(companies[0].id).then(properties => {
-                    console.log(properties) 
                     return properties})
                 : []
         })
@@ -56,11 +56,19 @@ function addNewProperty(property, username){
         })
 }
 
+function createCompany(username, password, name){
+    return bcrypt.hash(password, 10).then((hash) => {
+        return db('companies').insert([
+          {name, username, password: hash}
+        ])
+      })
+}
+
 
 module.exports = {
     getEmployees,
     getProperties,
-    addNewProperty
+    addNewProperty,
+    getCompanyId,
+    createCompany
 }
-
-// getProperties('username').then(console.log)
