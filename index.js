@@ -10,7 +10,7 @@ app.use(bodyParser.urlencoded())
 app.use(bodyParser.json())
 app.use(cors())
 
-app.post('/home', verifyToken, (req, res) => {
+app.post('/home', validateToken, (req, res) => {
     jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
         if (err){
             res.json(err)
@@ -36,7 +36,7 @@ app.post('/signup', (req, res) => {
     res.json('temp')
 })
 
-app.post('/properties', verifyToken, (req, res) => {
+app.post('/properties', validateToken, (req, res) => {
     console.log('test', req.body)
     jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
         if (err){
@@ -50,27 +50,6 @@ app.post('/properties', verifyToken, (req, res) => {
     })
 })
 
-function verifyToken(req, res, next){
-    //Get auth header value
-    
-    const bearerHeader = req.headers['authorization'];
-    // console.log(bearerHeader)
-    //Check if bearer exists
-    if (typeof bearerHeader == 'string'){
-        //Split string after 'Bearer'
-        const bearer = bearerHeader.split(' ')
-        //Get token from array
-        const bearerToken = bearer[1]
-        //set token
-        req.token = bearerToken
-        //Next middleware
-        next();
-    } else {
-        //Forbidden
-        res.json('forbidden')
-    }
-}
-
 app.post('/login', (req, res) => {
     const {username, password} = req.body
     auth.authenticateCompany(username, password)
@@ -81,7 +60,7 @@ app.post('/login', (req, res) => {
         })
 })
 
-app.post('/signup', verifyToken, (req, res) => {
+app.post('/signup', validateToken, (req, res) => {
 
 })
 
