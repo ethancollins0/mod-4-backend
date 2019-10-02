@@ -1,15 +1,14 @@
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
-const app = express()
 const db = require('./database_connection')
 const auth = require('./authenticate_company')
 const jwt = require('jsonwebtoken')
+const app = express()
 
 app.use(bodyParser.urlencoded())
 app.use(bodyParser.json())
 app.use(cors())
-
 
 app.post('/home', validateToken, (req, res) => {
     jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
@@ -51,6 +50,27 @@ app.post('/properties', validateToken, (req, res) => {
     })
 })
 
+function validateToken(req, res, next){
+    //Get auth header value
+    
+    const bearerHeader = req.headers['authorization'];
+    // console.log(bearerHeader)
+    //Check if bearer exists
+    if (typeof bearerHeader == 'string'){
+        //Split string after 'Bearer'
+        const bearer = bearerHeader.split(' ')
+        //Get token from array
+        const bearerToken = bearer[1]
+        //set token
+        req.token = bearerToken
+        //Next middleware
+        next();
+    } else {
+        //Forbidden
+        res.json('forbidden')
+    }
+}
+
 app.post('/login', (req, res) => {
     const {username, password} = req.body
     auth.authenticateCompany(username, password)
@@ -87,6 +107,11 @@ app.put('/', (req, res) => {
     res.json('PUT')
 })
 
+const port = process.env.PORT || 3001
+
+app.listen(port, () => {
+    console.log(`Listening on port ${port}...`)
+})
 
 function validateToken(req, res, next) {
     if (req.token){
@@ -98,9 +123,3 @@ function validateToken(req, res, next) {
         res.json('forbidden')
     }
 }
-
-const port = process.env.PORT || 3001
-
-app.listen(port, () => {
-    console.log(`Listening on port ${port}...`)
-})
