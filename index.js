@@ -55,7 +55,7 @@ function validateToken(req, res, next){
     
     const bearerHeader = req.headers['authorization'];
     // console.log(bearerHeader)
-    //Check if bearer exists
+    //Check if bearer exists 
     if (typeof bearerHeader == 'string'){
         //Split string after 'Bearer'
         const bearer = bearerHeader.split(' ')
@@ -64,6 +64,7 @@ function validateToken(req, res, next){
         //set token
         req.token = bearerToken
         //Next middleware
+        console.log(req.token)
         next();
     } else {
         //Forbidden
@@ -86,7 +87,7 @@ app.post('/signup', validateToken, (req, res) => {
 })
 
 function createToken(username, res){
-    jwt.sign({ username }, process.env.SECRET, {expiresIn: 30 * 60} ,(err, token) => {
+    jwt.sign({ username }, process.env.SECRET, {expiresIn: 30 * 60}, (err, token) => {
         getCompanyData(username).then(data => res.json([data, token]))
     })
 }
@@ -112,14 +113,3 @@ const port = process.env.PORT || 3001
 app.listen(port, () => {
     console.log(`Listening on port ${port}...`)
 })
-
-function validateToken(req, res, next) {
-    if (req.token){
-        const bearer = req.token
-        const bearerHeader = bearer.split(' ')[0]
-        req.token = bearerHeader
-        next()
-    } else {
-        res.json('forbidden')
-    }
-}
