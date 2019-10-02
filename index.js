@@ -15,6 +15,7 @@ app.post('/home', validateToken, (req, res) => {
         if (err){
             res.json(err)
         } else {
+            console.log(decoded)
             const username = decoded.username
             const company_data = {}
             const get_data = db.getEmployees(username)
@@ -64,7 +65,6 @@ function validateToken(req, res, next){
         //set token
         req.token = bearerToken
         //Next middleware
-        console.log(req.token)
         next();
     } else {
         //Forbidden
