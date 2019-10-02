@@ -87,7 +87,7 @@ app.post('/signup', validateToken, (req, res) => {
 })
 
 function createToken(username, res){
-    jwt.sign({ username }, process.env.SECRET, {expiresIn: 30 * 60}, (err, token) => {
+    jwt.sign({ user: username }, process.env.SECRET, {expiresIn: 30 * 60}, (err, token) => {
         getCompanyData(username).then(data => res.json([data, token]))
     })
 }
