@@ -1,14 +1,15 @@
 const express = require('express')
 const cors = require('cors')
 const bodyParser = require('body-parser')
+const app = express()
+
+app.use(cors())
+app.use(bodyParser.urlencoded())
+app.use(bodyParser.json())
+
 const db = require('./database_connection')
 const auth = require('./authenticate_company')
 const jwt = require('jsonwebtoken')
-const app = express()
-
-app.use(bodyParser.urlencoded())
-app.use(bodyParser.json())
-app.use(cors())
 
 app.post('/home', validateToken, (req, res) => {
     jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
