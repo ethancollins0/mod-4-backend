@@ -59,9 +59,11 @@ function addNewProperty(property, username){
 function createCompany(username, password, name){
     return bcrypt.hash(password, 10).then((hash) => {
         return db('companies').insert([
-          {name, username, password: hash}
-        ])
-      })
+          {name: name, username: username , password: hash}
+        ]).returning('id')
+      }).then(id => (
+        db('companies').where('id', id[0])
+      ))
 }
 
 
@@ -70,5 +72,5 @@ module.exports = {
     getProperties,
     addNewProperty,
     getCompanyId,
-    createCompany
+    createCompany,
 }
