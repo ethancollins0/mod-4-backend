@@ -30,7 +30,7 @@ app.post('/home', validateToken, (req, res) => {
     })
 })
 
-app.post('/signup', validateToken, (req, res) => {
+app.post('/signup', (req, res) => {
     const {username, password, company} = req.body
     db.createCompany(username, password, company)
         .then(resp => {
