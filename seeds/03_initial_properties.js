@@ -9,13 +9,13 @@ exports.seed = function(knex) {
         .then(id => {
           return knex('properties').insert([
             {address: '123 First Property Lane',
-             latest_survey_date: 'August 12th, 2019', 
+             latest_survey_date: '2019-10-13', 
              company_id: id, 
              tenant_name: "Jill Bismith", 
              tenant_email: "jillybean@gmail.com", 
              tenant_phone: '832-732-1785'},
             {address: '719 Second Property Lane', 
-            latest_survey_date: 'January 3rd, 2019', 
+            latest_survey_date: '2019-01-03', 
             company_id: id, 
             tenant_name: "Bob Burger", 
             tenant_email: "tina@gmail.com", 
