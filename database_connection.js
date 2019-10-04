@@ -66,6 +66,45 @@ function createCompany(username, password, name){
       ))
 }
 
+function addEmployee(username, name, email){
+    return getCompanyId(username)
+        .then(company => company[0].id)
+        .then((company_id) => {
+            return db('employees').insert([
+                {name, email, company_id}
+            ])
+        })
+}
+
+function updateProperty(username, property){
+    const {id, tenant_email, tenant_name, tenant_phone, address, latest_survey_date} = property
+    return getCompanyId(username)
+        .then(company => company[0].id)
+        .then(company_id => {
+            return db('properties').where('id', id).where('company_id', company_id).update({
+                tenant_email, tenant_name, tenant_phone, address, latest_survey_date
+            })
+    })
+}
+
+function deleteProperty(username, property){
+    const {id} = property
+    return getCompanyId(username)
+        .then(company => company[0].id)
+        .then(company_id => {
+            return db('properties').where('id', id).where('company_id', company_id).del()
+        })
+}
+
+function deleteEmployee(username, employee){
+    const {id} = employee
+    return getCompanyId(username)
+        .then(company => company[0].id)
+        .then(company_id => {
+            return db('employees').where('id', id).where('company_id', company_id).del()
+        })
+}
+
 
 module.exports = {
     getEmployees,
@@ -73,4 +112,8 @@ module.exports = {
     addNewProperty,
     getCompanyId,
     createCompany,
+    addEmployee,
+    updateProperty,
+    deleteProperty,
+    deleteEmployee
 }
