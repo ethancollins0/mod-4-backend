@@ -57,13 +57,15 @@ function addNewProperty(property, username){
 }
 
 function createCompany(username, password, name){
-    return bcrypt.hash(password, 10).then((hash) => {
+    return db('companies').where('username', username).length == 0
+        ? (bcrypt.hash(password, 10).then((hash) => {
         return db('companies').insert([
           {name: name, username: username , password: hash}
         ]).returning('id')
       }).then(id => (
         db('companies').where('id', id[0])
-      ))
+      )))
+      : db('companies').where('username', username).then(() => null)
 }
 
 function addEmployee(username, name, email){
