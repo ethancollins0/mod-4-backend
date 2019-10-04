@@ -56,7 +56,10 @@ app.post('/properties', validateToken, (req, res) => {
         } else {
         // console.log(decoded, decoded.username, req.body.property)
         decoded.username && req.body.property
-            ? db.addNewProperty(req.body.property, decoded.username).then(id => req.body.property.id = id ).then(res.json(req.body.property))
+            ? db.addNewProperty(req.body.property, decoded.username)
+                .then(id => id[0])
+                .then(id => res.body.property.id = id)
+                .then(res.json(req.body.property))
             : res.json('Failed to add property')
         }
     })

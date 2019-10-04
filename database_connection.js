@@ -44,16 +44,15 @@ function addNewProperty(property, username){
 
     return getCompanyId(username)
         .then(company => company[0].id)
-        .then(id => {
-            return db('properties').insert(
+        .then(id => (
+            db('properties').insert(
                 {address,
                  latest_survey_date, 
                  company_id: id, 
                  tenant_name, 
                  tenant_email, 
                  tenant_phone}).returning('id')
-
-        })
+        ))
 }
 
 function createCompany(username, password, name){
