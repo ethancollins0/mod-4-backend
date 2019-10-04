@@ -62,6 +62,18 @@ app.post('/properties', validateToken, (req, res) => {
     })
 })
 
+app.delete('/employee', validateToken, (req, res) => {
+    jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
+        if (err){
+            res.json(err) 
+        } else {
+            decoded.username && req.body.employee
+                ? db.deleteEmployee(decoded.username, req.body.employee).then(res.json('Deleted'))
+                : res.json('failed to delete')
+        }
+    })
+})
+
 app.post('/property', validateToken, (req, res) => {
     console.log(req.body.property)
     jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
