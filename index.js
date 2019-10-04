@@ -54,19 +54,26 @@ app.post('/properties', validateToken, (req, res) => {
 })
 
 app.post('/property', validateToken, (req, res) => {
+    console.log(req.body.property)
     jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
         if (err){
+            console.log(err)
             res.json(err)
         } else {
             db.updateProperty(decoded.username, req.body.property)
-                .then(success => {
-                    success 
-                        ? res.json({property: req.body.property})
+                .then(resp => resp == 1)
+                .then(truth => {
+                    truth
+                        ? res.json({ outcome: 'success' })
                         : res.json(null)
-                }).catch((err) => res.json(err))
-        }
-        
-    })
+                })
+                    // success 
+                    
+                    //     ? res.json('success')
+                    //     : res.json(null)
+                .catch((err) => res.json(err))
+            }
+        })
 })
 
 app.delete('/property', validateToken, (req, res) => {
