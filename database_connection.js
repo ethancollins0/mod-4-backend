@@ -97,7 +97,12 @@ function deleteProperty(username, property){
 }
 
 function deleteEmployee(username, employee){
-
+    const {id} = employee
+    return getCompanyId(username)
+        .then(company => company[0].id)
+        .then(company_id => {
+            return db('employees').where('id', id).where('company_id', company_id).del()
+        })
 }
 
 
