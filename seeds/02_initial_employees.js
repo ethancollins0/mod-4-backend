@@ -9,6 +9,7 @@ exports.seed = function(knex) {
     return knex('employees').insert([
         {name: 'Susan McMilligan', email: 'suze@gmail.com', company_id: id},
         {name: 'Bobby Robertson', email: 'bobert@yahoo.com', company_id: id},
+        {name: 'Miller Lite Jr.', email: 'water@gmail.com', company_id: id}
       ]);
     });
   })
