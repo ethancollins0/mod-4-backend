@@ -4,7 +4,16 @@ const bodyParser = require('body-parser')
 const db = require('./database_connection')
 const auth = require('./authenticate_company')
 const jwt = require('jsonwebtoken')
+const nodemailer = require('nodemailer')
 const app = express()
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        user: process.env.EMAIL,
+        pass: process.env.EMAIL_PASS
+    }
+})
 
 app.use(bodyParser.urlencoded())
 app.use(bodyParser.json())
@@ -88,6 +97,54 @@ app.delete('/property', validateToken, (req, res) => {
                         : res.json(null)
                 })
         }
+    })
+})
+
+app.post('/email', validateToken, (req, res) => {
+    if (req.body.properties == []|| req.body.employees == false){
+        res.json('failed')
+        return
+    }
+
+    let {employees, properties} = req.body
+
+    let emails = employees.map(employee => employee.email)
+    emails.length == 1
+        ? emails = emails[0]
+        : emails = emails.join(', ')
+    console.log(emails)
+    
+    let emailText = properties.map(property => {
+        const {address, 
+               tenant_name, 
+               tenant_email, 
+               tenant_phone, 
+               latest_survey_date} = property
+        return `
+                Address: ${address},
+                Tenant: ${tenant_name},
+                Email: ${tenant_email},
+                Phone: ${tenant_phone},
+                Most Recent Survey: ${latest_survey_date}
+
+        `
+    })
+
+    emailText = emailText.join(`
+        =====================
+    `)
+
+    let mailOptions = {
+        from: process.env.EMAIL,
+        to: emails,
+        subject: 'Surveys to Be Completed: Automated with Node.js',
+        text: emailText
+    }
+    
+    transporter.sendMail(mailOptions, (err, info) => {
+        err
+            ? res.json(err)
+            : res.json('Email Sent: ' + info.response)
     })
 })
 
