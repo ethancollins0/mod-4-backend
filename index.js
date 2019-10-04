@@ -41,7 +41,6 @@ app.post('/signup', (req, res) => {
 })
 
 app.post('/properties', validateToken, (req, res) => {
-    console.log('test', req.body)
     jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
         if (err){
             res.json(err)
@@ -50,6 +49,37 @@ app.post('/properties', validateToken, (req, res) => {
         decoded.username && req.body.property
             ? db.addNewProperty(req.body.property, decoded.username).then(res.json(req.body.property))
             : res.json('Failed to add property')
+        }
+    })
+})
+
+app.post('/property', validateToken, (req, res) => {
+    jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
+        if (err){
+            res.json(err)
+        } else {
+            db.updateProperty(decoded.username, req.body.property)
+                .then(success => {
+                    success 
+                        ? res.json({property: req.body.property})
+                        : res.json(null)
+                }).catch((err) => res.json(err))
+        }
+        
+    })
+})
+
+app.delete('/property', validateToken, (req, res) => {
+    jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
+        if (err){
+            res.json(err)
+        } else {
+            db.deleteProperty(decoded.username, req.body.property)
+                .then(success => {
+                    success
+                        ? res.json({ property: req.body.property })
+                        : res.json(null)
+                })
         }
     })
 })
@@ -85,8 +115,17 @@ app.post('/login', (req, res) => {
         })
 })
 
-app.post('/signup', validateToken, (req, res) => {
-
+app.post('/employees', validateToken, (req, res) => {
+    const {name, email} = req.body
+    jwt.verify(req.token, process.env.SECRET, (err, decoded) => {
+        if (err) {
+            res.json(err)
+        } else {
+            db.addEmployee(decoded.username, name, email)
+                .then(() => res.json({name: name, email: email}))
+                .catch(() => res.json('failed'))
+        }
+    })
 })
 
 function createToken(username, res){
