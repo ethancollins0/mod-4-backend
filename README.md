@@ -16,5 +16,4 @@ Survey Manager is a web app for property managers to organize property surveys, 
 ## Features
 RESTful API created with Node.js and Express. Connects to a remote PostgreSQL database using knex. 
 
-The API allows users on the frontend to save and persist properties and employees, signup an account, and handle JWT authentication on login and subsequent requests. 
-
+The API allows users on the frontend to save and persist properties and employees, signup an account, and handle JWT authentication on login and subsequent requests. Additionally, the api uses nodemailer to allow a user to email a list of properties to an employee.
